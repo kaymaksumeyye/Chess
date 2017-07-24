@@ -142,23 +142,25 @@ class Game extends React.Component {
     return cell;
   }
 
-  pawnToTakePiece(direction){
+  pawnToTakePiece(direction,resultForOtherCharacters){
     var possibleDirections=[[-1,1],[-1,-1],[1,-1],[1,1]];
     var result=false;
-    possibleDirections.forEach(function(value){
-      if(value[0]==direction[0] && value[1]==direction[1])
-        result=true;
-    });
-    //console.log(result)
+    if(this.isCharacterPawn())
+      possibleDirections.forEach(function(value){
+        if(value[0]==direction[0] && value[1]==direction[1])
+          result=true;
+      }.bind(this));
+    else
+      result=resultForOtherCharacters;
     return result;
   }
 
   //isMovedSides=gidilebilecekYerlerVeGidilemeyecekYonlerTespiti
   isMovedSides(cell,direction,border,x,y){
-    if(cell.character==null && !this.pawnToTakePiece(direction)){
+    if(cell.character==null && !this.pawnToTakePiece(direction,false)){
       cell=this.tasinGidebilecegiKonumlariToplaVeBorderAtamasi(cell,direction,border,x,y);
     }
-    else if(this.competitorCharacter(cell.character) && this.pawnToTakePiece(direction)){
+    else if(this.competitorCharacter(cell.character) && this.pawnToTakePiece(direction,true)){
       cell=this.tasinGidebilecegiKonumlariToplaVeBorderAtamasi(cell,direction,border,x,y);
       this.passMatrix.push(direction);
     }

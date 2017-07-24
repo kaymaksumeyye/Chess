@@ -9917,13 +9917,12 @@ var Game = function (_React$Component) {
     }
   }, {
     key: 'pawnToTakePiece',
-    value: function pawnToTakePiece(direction) {
+    value: function pawnToTakePiece(direction, resultForOtherCharacters) {
       var possibleDirections = [[-1, 1], [-1, -1], [1, -1], [1, 1]];
       var result = false;
-      possibleDirections.forEach(function (value) {
+      if (this.isCharacterPawn()) possibleDirections.forEach(function (value) {
         if (value[0] == direction[0] && value[1] == direction[1]) result = true;
-      });
-      //console.log(result)
+      }.bind(this));else result = resultForOtherCharacters;
       return result;
     }
 
@@ -9932,9 +9931,9 @@ var Game = function (_React$Component) {
   }, {
     key: 'isMovedSides',
     value: function isMovedSides(cell, direction, border, x, y) {
-      if (cell.character == null && !this.pawnToTakePiece(direction)) {
+      if (cell.character == null && !this.pawnToTakePiece(direction, false)) {
         cell = this.tasinGidebilecegiKonumlariToplaVeBorderAtamasi(cell, direction, border, x, y);
-      } else if (this.competitorCharacter(cell.character) && this.pawnToTakePiece(direction)) {
+      } else if (this.competitorCharacter(cell.character) && this.pawnToTakePiece(direction, true)) {
         cell = this.tasinGidebilecegiKonumlariToplaVeBorderAtamasi(cell, direction, border, x, y);
         this.passMatrix.push(direction);
       } else this.passMatrix.push(direction);
