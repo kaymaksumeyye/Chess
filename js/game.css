@@ -13,14 +13,12 @@ ol, ul {
   display: table;
 
 }
-
-.status {
-  margin-bottom: 10px;
+h1{
+    margin-left: 410px;
+    padding-left: 60px;
 }
-
-.square {
+.winning-character{
   background-color: white;
-  border: 1px solid #999;
   float: left;
   font-size: 24px;
   font-weight: bold;
@@ -32,7 +30,34 @@ ol, ul {
   text-align: center;
   width: 45px;
 }
+.status {
+  margin-bottom: 10px;
+}
 
+.square {
+  background-color: white;
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 55px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 55px;
+}
+.chess-board{
+  float:left;
+}
+.colored-pieces{
+  width:183px;
+  height: 215px;
+  margin-left: 5px;
+  padding-left: 15px;
+  float: left;
+}
 .square:focus {
   outline: none;
 }

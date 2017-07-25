@@ -13,14 +13,14 @@ class Game extends React.Component {
     this.passMatrix=[];
     this.moveMatrix=[];
     this.endClick={"character":[], "location":[]};
-    this.state={matrix:[], lostPieces:[]};
+    this.state={chessBoardMatrix:[], piecesOutOfThePlay:[]};
     this.img=null;
     this.color;
     this.ex=1;
     this.schema = {
       "nameChessPieces":[["rook","+"],["knight","-"],["bishop","+"],["queen","+"],["king","-"],["pawn","-"]],
       "imgBlack": [9820, 9822, 9821, 9819, 9818,9821, 9822, 9820, 9823],
-      "imgWhite": [9814, 9816, 9815, 9812, 9813, 9815, 9816, 9814, 9817],
+      "imgWhite": [9814, 9816, 9815, 9813, 9812, 9815, 9816, 9814, 9817],
       "move":{"pawn":[[1, 0], [2, 0],[-1, 0], [-2, 0]],
               "rook":[[1,0],[-1,0],[0,1],[0,-1]],
               "knight":[[2,-1],[2,1],[-2,-1],[-2,1],[1,2],[1,-2],[-1,2],[-1,-2]],
@@ -48,10 +48,10 @@ class Game extends React.Component {
   setColor(i){
      this.setEx(i);
      if((this.ex+i)%2==0){
-          this.color="pink";
+          this.color="brown";
      }
      else
-          this.color="brown";
+          this.color="pink";
   }
 
   setImg(imgColor,i,ex,indis1,indis2){
@@ -67,7 +67,7 @@ class Game extends React.Component {
 
   arrayRender(){
     var valuesMatrix=[];
-    var updatedMatrix=this.state.matrix;
+    var updatedMatrix=this.state.chessBoardMatrix;
     var json;
       for(var i=0;i<=64;i++){
          if(i%8==0 && i!=0){
@@ -86,7 +86,7 @@ class Game extends React.Component {
                character:this.img};
          valuesMatrix.push(json);
      }
-    //this.setState({matrix:updatedMatrix});
+    //this.setState({chessBoardMatrix:updatedMatrix});
   }
 
   findCharacter(){
@@ -171,13 +171,13 @@ class Game extends React.Component {
 
   addAndRemove(location,ex,characterName,border){
     var coordinatex, coordinatey;
-    var updatedMatrix = this.state.matrix;
+    var updatedMatrix = this.state.chessBoardMatrix;
     for(var i=0; i<this.schema.move[characterName].length;i++){
       coordinatex=location[0]+this.schema.move[characterName][i][0]*ex;
       coordinatey=location[1]+this.schema.move[characterName][i][1]*ex;
-      if(coordinatex>=0 && coordinatey>=0 && coordinatex<this.state.matrix.length && coordinatey<this.state.matrix[0].length )
+      if(coordinatex>=0 && coordinatey>=0 && coordinatex<this.state.chessBoardMatrix.length && coordinatey<this.state.chessBoardMatrix[0].length )
         updatedMatrix[coordinatex][coordinatey]=this.isMovedSides(updatedMatrix[coordinatex][coordinatey],this.schema.move[characterName][i],border,coordinatex,coordinatey);
-      this.setState({matrix:updatedMatrix});
+      this.setState({chessBoardMatrix:updatedMatrix});
     }
   }
 
@@ -188,15 +188,24 @@ class Game extends React.Component {
     do{
       this.addAndRemove(location,ex,endCharacter[0],border);
       ex++;
-    }while(endCharacter[1]=="+" && ex< this.state.matrix.length);
+    }while(endCharacter[1]=="+" && ex< this.state.chessBoardMatrix.length);
   }
 
+  setPiecesOutOfThePlay(character){
+    if(character!=null){
+      var toTakePieces=this.state.piecesOutOfThePlay;
+      toTakePieces.push(character);
+      this.setState({piecesOutOfThePlay:toTakePieces});
+    }
+  }
   move(x,y){
-    var updatedMatrix = this.state.matrix;
+    var updatedMatrix = this.state.chessBoardMatrix;
     this.reverse(this.endClick.location, this.endClick.character[0],"1px solid #999");
+    this.setPiecesOutOfThePlay(updatedMatrix[x][y].character);
     updatedMatrix[x][y].character=this.endClick.character[1];
     updatedMatrix[this.endClick.location[0]][this.endClick.location[1]].character=null;
-    //this.setState({matrix:updatedMatrix});
+
+    //this.setState({chessBoardMatrix:updatedMatrix});
   }
 
   controlPawn(imgName,coordinateX){
@@ -277,7 +286,7 @@ class Game extends React.Component {
       this.move(x,y);
     }
     else{
-      this.activeCharacter=this.state.matrix[x][y].character;
+      this.activeCharacter=this.state.chessBoardMatrix[x][y].character;
       if(this.activeCharacter!=null){
         k=this.findCharacter();
         if(this.isCharacterPawn())
@@ -288,8 +297,20 @@ class Game extends React.Component {
     }
   }
 
-  draw(){
-    var boards=this.state.matrix.map(function(sq,i){
+  renderPiecesOutOfThePlay(imgName){
+    return this.state.piecesOutOfThePlay.filter(function(tmp){
+      return this.pieceColor(tmp)==imgName;
+    }.bind(this));
+  }
+
+  drawPiecesOutOfThePlay(imgName){
+    return this.renderPiecesOutOfThePlay(imgName).map(function(tmp){
+      return <div className="winning-character"> {String.fromCharCode(tmp)}</div>
+    });
+
+  }
+  drawChessBoard(){
+    var boards=this.state.chessBoardMatrix.map(function(sq,i){
        return sq.map(function(s,j){
         if(s.character!=null)
            return <button className="square" onClick={(x,y)=>this.handleClick(i,j)} style = {{backgroundColor: s.color,border:s.border}}>{String.fromCharCode(s.character)}
@@ -307,7 +328,16 @@ class Game extends React.Component {
 
   render(){
     return <div>
-          {this.draw()}
+            <div className="chess-board">
+              {this.drawChessBoard()}
+            </div>
+              <h1> PIECES OUT OF THE PLAY </h1>
+            <div className="colored-pieces">
+              {this.drawPiecesOutOfThePlay("imgWhite")}
+            </div>
+            <div className="colored-pieces">
+              {this.drawPiecesOutOfThePlay("imgBlack")}
+            </div>
           </div>
   }
 }
