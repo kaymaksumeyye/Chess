@@ -9798,7 +9798,7 @@ var Game = function (_React$Component) {
     _this.passMatrix = [];
     _this.moveMatrix = [];
     _this.endClick = { "character": [], "location": [] };
-    _this.state = { chessBoardMatrix: [], piecesOutOfThePlay: [] };
+    _this.state = { chessBoardMatrix: [], piecesMove: [] };
     _this.img = null;
     _this.color;
     _this.ex = 1;
@@ -9963,20 +9963,18 @@ var Game = function (_React$Component) {
       } while (endCharacter[1] == "+" && ex < this.state.chessBoardMatrix.length);
     }
   }, {
-    key: 'setPiecesOutOfThePlay',
-    value: function setPiecesOutOfThePlay(character) {
-      if (character != null) {
-        var toTakePieces = this.state.piecesOutOfThePlay;
-        toTakePieces.push(character);
-        this.setState({ piecesOutOfThePlay: toTakePieces });
-      }
+    key: 'setPiecesMove',
+    value: function setPiecesMove(coordinate) {
+      var move = this.state.piecesMove;
+      move.push([coordinate, this.endClick.location]);
+      this.setState({ piecesMove: move });
     }
   }, {
     key: 'move',
     value: function move(x, y) {
       var updatedMatrix = this.state.chessBoardMatrix;
+      this.setPiecesMove([x, y]);
       this.reverse(this.endClick.location, this.endClick.character[0], "1px solid #999");
-      this.setPiecesOutOfThePlay(updatedMatrix[x][y].character);
       updatedMatrix[x][y].character = this.endClick.character[1];
       updatedMatrix[this.endClick.location[0]][this.endClick.location[1]].character = null;
 
@@ -10066,21 +10064,20 @@ var Game = function (_React$Component) {
       }
     }
   }, {
-    key: 'renderPiecesOutOfThePlay',
-    value: function renderPiecesOutOfThePlay(imgName) {
-      return this.state.piecesOutOfThePlay.filter(function (tmp) {
-        return this.pieceColor(tmp) == imgName;
-      }.bind(this));
-    }
-  }, {
-    key: 'drawPiecesOutOfThePlay',
-    value: function drawPiecesOutOfThePlay(imgName) {
-      return this.renderPiecesOutOfThePlay(imgName).map(function (tmp) {
+    key: 'drawPiecesMove',
+    value: function drawPiecesMove() {
+      var columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+      return this.state.piecesMove.map(function (newAndOldCoordinate, indis) {
         return _react2.default.createElement(
           'div',
-          { className: 'winning-character' },
-          ' ',
-          String.fromCharCode(tmp)
+          null,
+          indis + 1,
+          '.  ',
+          columns[newAndOldCoordinate[1][1]],
+          newAndOldCoordinate[1][0] + 1,
+          '    -----    ',
+          columns[newAndOldCoordinate[0][1]],
+          newAndOldCoordinate[0][0] + 1
         );
       });
     }
@@ -10102,12 +10099,34 @@ var Game = function (_React$Component) {
             }, style: { backgroundColor: s.color, border: s.border } });
         }.bind(this));
       }.bind(this));
-      return boards.map(function (tmp) {
+      return boards.map(function (tmp, indis) {
         return _react2.default.createElement(
           'div',
           { className: 'board-row' },
           ' ',
-          tmp
+          tmp,
+          ' ',
+          _react2.default.createElement(
+            'div',
+            { className: 'chess-board' },
+            '  ',
+            indis + 1,
+            ' '
+          ),
+          ' '
+        );
+      });
+    }
+  }, {
+    key: 'columnprintscreen',
+    value: function columnprintscreen() {
+      var columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+      return columns.map(function (value) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'chess-board' },
+          ' ',
+          value
         );
       });
     }
@@ -10120,22 +10139,18 @@ var Game = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'chess-board' },
-          this.drawChessBoard()
+          this.drawChessBoard(),
+          this.columnprintscreen()
         ),
         _react2.default.createElement(
           'h1',
           null,
-          ' PIECES OUT OF THE PLAY '
+          ' YOU MOVE '
         ),
         _react2.default.createElement(
           'div',
           { className: 'colored-pieces' },
-          this.drawPiecesOutOfThePlay("imgWhite")
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: 'colored-pieces' },
-          this.drawPiecesOutOfThePlay("imgBlack")
+          this.drawPiecesMove()
         )
       );
     }
@@ -22822,7 +22837,7 @@ exports = module.exports = __webpack_require__(187)(undefined);
 
 
 // module
-exports.push([module.i, "body {\n  font: 14px \"Century Gothic\", Futura, sans-serif;\n  margin: 20px; }\n\nol, ul {\n  padding-left: 30px; }\n\n.board-row:after {\n  clear: both;\n  content: \"\";\n  display: table; }\n\nh1 {\n  margin-left: 410px;\n  padding-left: 60px; }\n\n.winning-character {\n  background-color: white;\n  float: left;\n  font-size: 24px;\n  font-weight: bold;\n  line-height: 34px;\n  height: 45px;\n  margin-right: -1px;\n  margin-top: -1px;\n  padding: 0;\n  text-align: center;\n  width: 45px; }\n\n.status {\n  margin-bottom: 10px; }\n\n.square {\n  background-color: white;\n  border: 1px solid #999;\n  float: left;\n  font-size: 24px;\n  font-weight: bold;\n  line-height: 34px;\n  height: 55px;\n  margin-right: -1px;\n  margin-top: -1px;\n  padding: 0;\n  text-align: center;\n  width: 55px; }\n\n.chess-board {\n  float: left; }\n\n.colored-pieces {\n  width: 183px;\n  height: 215px;\n  margin-left: 5px;\n  padding-left: 15px;\n  float: left; }\n\n.square:focus {\n  outline: none; }\n\n.kbd-navigation .square:focus {\n  background: #ddd; }\n\n.game {\n  display: flex;\n  flex-direction: row; }\n\n.game-info {\n  margin-left: 20px; }\n", ""]);
+exports.push([module.i, "body {\n  font: 14px \"Century Gothic\", Futura, sans-serif;\n  margin: 20px; }\n\nol, ul {\n  padding-left: 30px; }\n\n.board-row:after {\n  clear: both;\n  content: \"\";\n  display: table; }\n\nh1 {\n  margin-left: 420px;\n  padding-left: 60px; }\n\n.winning-character {\n  background-color: white;\n  float: left;\n  font-size: 24px;\n  font-weight: bold;\n  line-height: 34px;\n  height: 45px;\n  margin-right: -1px;\n  margin-top: -1px;\n  padding: 0;\n  text-align: center;\n  width: 45px; }\n\n.status {\n  margin-bottom: 10px; }\n\n.square {\n  background-color: white;\n  border: 1px solid #999;\n  float: left;\n  font-size: 24px;\n  font-weight: bold;\n  line-height: 34px;\n  height: 55px;\n  margin-right: -1px;\n  margin-top: -1px;\n  padding: 0;\n  text-align: center;\n  width: 55px; }\n\n.chess-board {\n  float: left;\n  font-size: 20px;\n  font-weight: bold;\n  margin-left: 16px;\n  margin-top: 10px;\n  margin-right: 25px; }\n\n.colored-pieces {\n  width: 183px;\n  height: 215px;\n  margin-left: 5px;\n  padding-left: 15px;\n  float: left;\n  font-size: 20px; }\n\n.square:focus {\n  outline: none; }\n\n.kbd-navigation .square:focus {\n  background: #ddd; }\n\n.game {\n  display: flex;\n  flex-direction: row; }\n\n.game-info {\n  margin-left: 20px; }\n", ""]);
 
 // exports
 

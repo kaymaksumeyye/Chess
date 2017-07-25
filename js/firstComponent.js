@@ -13,7 +13,7 @@ class Game extends React.Component {
     this.passMatrix=[];
     this.moveMatrix=[];
     this.endClick={"character":[], "location":[]};
-    this.state={chessBoardMatrix:[], piecesOutOfThePlay:[]};
+    this.state={chessBoardMatrix:[], piecesMove:[]};
     this.img=null;
     this.color;
     this.ex=1;
@@ -191,17 +191,15 @@ class Game extends React.Component {
     }while(endCharacter[1]=="+" && ex< this.state.chessBoardMatrix.length);
   }
 
-  setPiecesOutOfThePlay(character){
-    if(character!=null){
-      var toTakePieces=this.state.piecesOutOfThePlay;
-      toTakePieces.push(character);
-      this.setState({piecesOutOfThePlay:toTakePieces});
-    }
+  setPiecesMove(coordinate){
+    var move=this.state.piecesMove;
+    move.push([coordinate,this.endClick.location]);
+    this.setState({piecesMove:move});
   }
   move(x,y){
     var updatedMatrix = this.state.chessBoardMatrix;
+    this.setPiecesMove([x,y]);
     this.reverse(this.endClick.location, this.endClick.character[0],"1px solid #999");
-    this.setPiecesOutOfThePlay(updatedMatrix[x][y].character);
     updatedMatrix[x][y].character=this.endClick.character[1];
     updatedMatrix[this.endClick.location[0]][this.endClick.location[1]].character=null;
 
@@ -297,18 +295,14 @@ class Game extends React.Component {
     }
   }
 
-  renderPiecesOutOfThePlay(imgName){
-    return this.state.piecesOutOfThePlay.filter(function(tmp){
-      return this.pieceColor(tmp)==imgName;
-    }.bind(this));
-  }
-
-  drawPiecesOutOfThePlay(imgName){
-    return this.renderPiecesOutOfThePlay(imgName).map(function(tmp){
-      return <div className="winning-character"> {String.fromCharCode(tmp)}</div>
+  drawPiecesMove(){
+    const columns=['a','b','c','d','e','f','g','h'];
+    return this.state.piecesMove.map(function(newAndOldCoordinate,indis){
+      return <div>{indis+1}.  {columns[newAndOldCoordinate[1][1]]}{newAndOldCoordinate[1][0]+1}    -----    {columns[newAndOldCoordinate[0][1]]}{newAndOldCoordinate[0][0]+1}
+      </div>
     });
-
   }
+
   drawChessBoard(){
     var boards=this.state.chessBoardMatrix.map(function(sq,i){
        return sq.map(function(s,j){
@@ -320,9 +314,17 @@ class Game extends React.Component {
                </button>
        }.bind(this));
      }.bind(this));
-    return boards.map(function(tmp){
-      return  <div className="board-row"> {tmp}</div>
+    return boards.map(function(tmp,indis){
+      return  <div className="board-row"> {tmp} <div className="chess-board">  {indis+1} </div> </div>
 
+    });
+  }
+
+  columnprintscreen(){
+    const columns=['A','B','C','D','E','F','G','H'];
+    return columns.map(function(value){
+      return <div className="chess-board"> {value}
+      </div>
     });
   }
 
@@ -330,13 +332,11 @@ class Game extends React.Component {
     return <div>
             <div className="chess-board">
               {this.drawChessBoard()}
+              {this.columnprintscreen()}
             </div>
-              <h1> PIECES OUT OF THE PLAY </h1>
+              <h1> YOU MOVE </h1>
             <div className="colored-pieces">
-              {this.drawPiecesOutOfThePlay("imgWhite")}
-            </div>
-            <div className="colored-pieces">
-              {this.drawPiecesOutOfThePlay("imgBlack")}
+              {this.drawPiecesMove()}
             </div>
           </div>
   }

@@ -14,7 +14,7 @@ ol, ul {
 
 }
 h1{
-    margin-left: 410px;
+    margin-left: 420px;
     padding-left: 60px;
 }
 .winning-character{
@@ -50,6 +50,11 @@ h1{
 }
 .chess-board{
   float:left;
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 16px;
+  margin-top: 10px;
+  margin-right: 25px;
 }
 .colored-pieces{
   width:183px;
@@ -57,6 +62,7 @@ h1{
   margin-left: 5px;
   padding-left: 15px;
   float: left;
+  font-size: 20px;
 }
 .square:focus {
   outline: none;
