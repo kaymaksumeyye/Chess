@@ -320,7 +320,7 @@ class Game extends React.Component {
     });
   }
 
-  columnprintscreen(){
+  columnPrintScreen(){
     const columns=['A','B','C','D','E','F','G','H'];
     return columns.map(function(value){
       return <div className="chess-board"> {value}
@@ -332,7 +332,7 @@ class Game extends React.Component {
     return <div>
             <div className="chess-board">
               {this.drawChessBoard()}
-              {this.columnprintscreen()}
+              {this.columnPrintScreen()}
             </div>
               <h1> YOU MOVE </h1>
             <div className="colored-pieces">

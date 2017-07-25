@@ -10118,8 +10118,8 @@ var Game = function (_React$Component) {
       });
     }
   }, {
-    key: 'columnprintscreen',
-    value: function columnprintscreen() {
+    key: 'columnPrintScreen',
+    value: function columnPrintScreen() {
       var columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
       return columns.map(function (value) {
         return _react2.default.createElement(
@@ -10140,7 +10140,7 @@ var Game = function (_React$Component) {
           'div',
           { className: 'chess-board' },
           this.drawChessBoard(),
-          this.columnprintscreen()
+          this.columnPrintScreen()
         ),
         _react2.default.createElement(
           'h1',
