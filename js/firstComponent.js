@@ -48,16 +48,16 @@ class Game extends React.Component {
 
   setColor(i) {
      this.setEx(i);
-     if((this.ex + i) % 2 == 0)
+     if((this.ex+i)%2 == 0)
           this.color = "brown";
      else
           this.color = "pink";
   }
 
-  setImg(imgColor, i, ex, indis1, indis2) {
-    var array = [this.schema[imgColor][this.schema[imgColor].length - 1], this.schema[imgColor][i - ex * 7 / 6]];
-    if(i >= ex && i < this.schema[imgColor].length + 7 + ex) {
-          if(i >= this.schema[imgColor].length + ex - 1)
+  setImg(imgColor,i,ex,indis1,indis2) {
+    var array = [this.schema[imgColor][this.schema[imgColor].length-1], this.schema[imgColor][i-ex*7/6]];
+    if(i >= ex && i < this.schema[imgColor].length+7+ex){
+          if(i >= this.schema[imgColor].length+ex-1)
             this.img = array[indis1];
           else
             this.img = array[indis2];
@@ -69,7 +69,7 @@ class Game extends React.Component {
     var updatedMatrix = this.state.chessBoardMatrix;
     var json;
       for(var i = 0; i <= 64; i++){
-         if(i % 8 == 0 && i != 0){
+         if(i%8 == 0 && i != 0){
            updatedMatrix.push(valuesMatrix);
            valuesMatrix = [];
          }
@@ -85,7 +85,7 @@ class Game extends React.Component {
                  character: this.img };
          valuesMatrix.push(json);
      }
-    //this.setState({"chessBoardMatrix": updatedMatrix});
+    //this.setState({chessBoardMatrix:updatedMatrix});
   }
 
   findCharacter() {
@@ -94,8 +94,8 @@ class Game extends React.Component {
     var img = this.pieceColor(this.activeCharacter);
     this.schema[img].forEach(function(value, i) {
         if(this.activeCharacter == value && t == true) {//sorun:k==8 olduğunda
-          if(i > this.schema["nameChessPieces"].length - 2)
-           k = i - 3;
+          if(i > this.schema["nameChessPieces"].length-2)
+           k = i-3;
           else
             k = i;
           t = false;
@@ -175,7 +175,7 @@ class Game extends React.Component {
       coordinatey = location[1] + this.schema.move[characterName][i][1] * ex;
       if(coordinatex >= 0 && coordinatey >= 0 && coordinatex < this.state.chessBoardMatrix.length && coordinatey < this.state.chessBoardMatrix[0].length )
         updatedMatrix[coordinatex][coordinatey] = this.isMovedSides(updatedMatrix[coordinatex][coordinatey], this.schema.move[characterName][i], border, [coordinatex, coordinatey]);
-      this.setState({"chessBoardMatrix": updatedMatrix});
+      this.setState({chessBoardMatrix:updatedMatrix});
     }
   }
 
@@ -192,7 +192,7 @@ class Game extends React.Component {
   setPiecesMove(coordinate) {
     var move = this.state.piecesMove;
     move.push([coordinate, this.endClick.location]);
-    this.setState({"piecesMove": move});
+    this.setState({piecesMove: move});
   }
 
   move(x, y){
@@ -202,7 +202,7 @@ class Game extends React.Component {
     updatedMatrix[x][y].character = this.endClick.character[1];
     updatedMatrix[this.endClick.location[0]][this.endClick.location[1]].character = null;
 
-    //this.setState({"chessBoardMatrix": updatedMatrix});
+    //this.setState({chessBoardMatrix:updatedMatrix});
   }
 
   controlPawn(imgName,coordinateX) {
@@ -297,7 +297,9 @@ class Game extends React.Component {
     const columns = ['a','b','c','d','e','f','g','h'];
     return this.state.piecesMove.map(function(newAndOldCoordinate, indis) {
       return <div>
-        {indis+1}. {columns[newAndOldCoordinate[1][1]]}{newAndOldCoordinate[1][0] + 1}    -----    {columns[newAndOldCoordinate[0][1]]}{newAndOldCoordinate[0][0] + 1}
+        <div>
+          {indis+1}. {columns[newAndOldCoordinate[1][1]]}{newAndOldCoordinate[1][0] + 1}    ___    {columns[newAndOldCoordinate[0][1]]}{newAndOldCoordinate[0][0] + 1}
+        </div>
       </div>
     });
   }
@@ -305,21 +307,22 @@ class Game extends React.Component {
   render() {
     const myScrollbar = {
       width: 200,
-      height: 400,
+      height: 300,
     };
     return <div>
             <ChessBoard chessBoardMatrix = {this.state.chessBoardMatrix} onClick = {(x,y) => this.handleClick(x,y)} />
-            <h1> YOU MOVE </h1>
             <div className = "colored-pieces">
+            <h1> YOU MOVE </h1>
               <ReactScrollbar style = {myScrollbar}>
-                <div className = "should-have-a-children scroll-me">
+                <div className = "should-have-a-children scroll-me move">
                   {this.drawPiecesMove()}
                 </div>
               </ReactScrollbar>
             </div>
           </div>
-  }
+    }
 }
+
 ReactDOM.render(
   <Game />,
   document.getElementById('root')

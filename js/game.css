@@ -13,11 +13,13 @@ ol, ul {
   display: table;
 
 }
-h1{
-    margin-left: 420px;
-    padding-left: 60px;
+
+.move {
+  font-size: 20px;
+  margin-left: 40px;
 }
-.winning-character{
+
+.winning-character {
   background-color: white;
   float: left;
   font-size: 24px;
@@ -48,8 +50,8 @@ h1{
   text-align: center;
   width: 55px;
 }
-.chess-board{
-  float:left;
+.chess-board {
+  float: left;
   font-size: 20px;
   font-weight: bold;
   margin-left: 16px;
@@ -57,8 +59,7 @@ h1{
   margin-right: 25px;
 }
 .colored-pieces{
-  width:183px;
-  height: 215px;
+  width: 260px;
   margin-left: 5px;
   padding-left: 15px;
   float: left;
