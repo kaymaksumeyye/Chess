@@ -13,7 +13,7 @@ class Game extends React.Component {
     this.activeLocation = [];
     this.passMatrix = [];
     this.moveMatrix = [];
-    this.endClick = {"character": [], "location": []};
+    this.endClick = {"character": [], "location": [], "move": []};
     this.state = {"chessBoardMatrix": [], "piecesMove": []};
     this.img = null;
     this.color;
@@ -23,11 +23,11 @@ class Game extends React.Component {
       "imgBlack": [9820, 9822, 9821, 9819, 9818,9821, 9822, 9820, 9823],
       "imgWhite": [9814, 9816, 9815, 9813, 9812, 9815, 9816, 9814, 9817],
       "move": { "pawn": [[1, 0], [2, 0], [-1, 0], [-2, 0]],
-                "rook": [[1,0], [-1,0], [0,1], [0,-1]],
-                "knight": [[2,-1], [2,1], [-2,-1], [-2,1], [1,2], [1,-2], [-1,2], [-1,-2]],
-                "bishop": [[-1,-1], [-1,1], [1,-1], [1,1]],
-                "king": [[0,-1], [-1,-1], [-1,0], [-1,1], [0,1], [1,1], [1,0], [1,-1]],
-                "queen": [[0,-1], [-1,-1], [-1,0], [-1,1], [0,1], [1,1], [1,0], [1,-1]]
+                "rook": [[1, 0], [-1, 0], [0, 1], [0, -1]],
+                "knight": [[2, -1], [2, 1], [-2, -1], [-2, 1], [1, 2], [1, -2], [-1, 2], [-1, -2]],
+                "bishop": [[-1, -1], [-1, 1], [1, -1], [1, 1]],
+                "king": [[0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1]],
+                "queen": [[0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1]]
               }
     };
     this.arrayRender();
@@ -48,16 +48,16 @@ class Game extends React.Component {
 
   setColor(i) {
      this.setEx(i);
-     if((this.ex+i)%2 == 0)
+     if((this.ex + i) % 2 == 0)
           this.color = "brown";
      else
           this.color = "pink";
   }
 
   setImg(imgColor,i,ex,indis1,indis2) {
-    var array = [this.schema[imgColor][this.schema[imgColor].length-1], this.schema[imgColor][i-ex*7/6]];
-    if(i >= ex && i < this.schema[imgColor].length+7+ex){
-          if(i >= this.schema[imgColor].length+ex-1)
+    var array = [this.schema[imgColor][this.schema[imgColor].length-1], this.schema[imgColor][i - ex * 7/6]];
+    if(i >= ex && i < this.schema[imgColor].length + 7 + ex){
+          if(i >= this.schema[imgColor].length + ex - 1)
             this.img = array[indis1];
           else
             this.img = array[indis2];
@@ -68,8 +68,8 @@ class Game extends React.Component {
     var valuesMatrix = [];
     var updatedMatrix = this.state.chessBoardMatrix;
     var json;
-      for(var i = 0; i <= 64; i++){
-         if(i%8 == 0 && i != 0){
+      for(var i = 0; i <= 64; i++) {
+         if(i % 8 == 0 && i != 0) {
            updatedMatrix.push(valuesMatrix);
            valuesMatrix = [];
          }
@@ -94,7 +94,7 @@ class Game extends React.Component {
     var img = this.pieceColor(this.activeCharacter);
     this.schema[img].forEach(function(value, i) {
         if(this.activeCharacter == value && t == true) {//sorun:k==8 olduğunda
-          if(i > this.schema["nameChessPieces"].length-2)
+          if(i > this.schema["nameChessPieces"].length - 2)
            k = i-3;
           else
             k = i;
@@ -114,8 +114,8 @@ class Game extends React.Component {
   }
 
   competitorCharacter(competitor) {
-    var activeCharacterColor = this.pieceColor(this.activeCharacter);
     var competitorColor = this.pieceColor(competitor);
+    var activeCharacterColor = this.pieceColor(this.activeCharacter);
     if(activeCharacterColor != competitorColor && competitorColor != "" && activeCharacterColor != "")
       return true;
     else
@@ -130,19 +130,15 @@ class Game extends React.Component {
     return true;
   }
 
-  tasinGidebilecegiKonumlariToplaVeBorderAtamasi(cell, direction, border, coordinate) {
+  setMoveMatrix(direction, coordinate) {
     if(this.inDirectionNoCharacter(direction)) {
-      if(border == "3px solid yellow") {
         this.moveMatrix.push(coordinate);
-      }
-      cell.border = border;
     }
-    return cell;
   }
 
   pawnToTakePiece(direction, resultForOtherCharacters){
-    var possibleDirections = [[-1,1], [-1,-1], [1,-1], [1,1]];
     var result = false;
+    var possibleDirections = [[-1, 1], [-1, -1], [1, -1], [1, 1]];
     if(this.isCharacterPawn())
       possibleDirections.forEach(function(value) {
         if(value[0] == direction[0] && value[1] == direction[1])
@@ -153,38 +149,34 @@ class Game extends React.Component {
     return result;
   }
 
-  //isMovedSides=gidilebilecekYerlerVeGidilemeyecekYonlerTespiti
-  isMovedSides(cell, direction, border, coordinate){
+  callSetMoveMatrixMethod(cell, direction, coordinate){
     if(cell.character == null && !this.pawnToTakePiece(direction, false)) {
-      cell = this.tasinGidebilecegiKonumlariToplaVeBorderAtamasi(cell, direction, border, coordinate);
+      this.setMoveMatrix(direction, coordinate);
     }
     else if(this.competitorCharacter(cell.character) && this.pawnToTakePiece(direction, true)) {
-      cell = this.tasinGidebilecegiKonumlariToplaVeBorderAtamasi(cell, direction, border, coordinate);
+      this.setMoveMatrix(direction, coordinate);
       this.passMatrix.push(direction);
     }
     else
       this.passMatrix.push(direction);
-    return cell;
   }
 
-  addAndRemove(location, ex, characterName, border) {
+  addAndRemove(location, ex, characterName) {
     var coordinatex, coordinatey;
-    var updatedMatrix = this.state.chessBoardMatrix;
     for(var i = 0; i < this.schema.move[characterName].length; i++) {
       coordinatex = location[0] + this.schema.move[characterName][i][0] * ex;
       coordinatey = location[1] + this.schema.move[characterName][i][1] * ex;
       if(coordinatex >= 0 && coordinatey >= 0 && coordinatex < this.state.chessBoardMatrix.length && coordinatey < this.state.chessBoardMatrix[0].length )
-        updatedMatrix[coordinatex][coordinatey] = this.isMovedSides(updatedMatrix[coordinatex][coordinatey], this.schema.move[characterName][i], border, [coordinatex, coordinatey]);
-      this.setState({chessBoardMatrix:updatedMatrix});
+        this.callSetMoveMatrixMethod(this.state.chessBoardMatrix[coordinatex][coordinatey], this.schema.move[characterName][i], [coordinatex, coordinatey]);
     }
   }
 
-  reverse(location, endCharacter, border) {
+  reverse(location, endCharacter) {
     var ex = 1;
     this.passMatrix = [];
     this.moveMatrix = [];
     do {
-      this.addAndRemove(location, ex, endCharacter[0], border);
+      this.addAndRemove(location, ex, endCharacter[0]);
       ex++;
     } while(endCharacter[1] == "+" && ex < this.state.chessBoardMatrix.length);
   }
@@ -196,13 +188,12 @@ class Game extends React.Component {
   }
 
   move(x, y){
-    var updatedMatrix = this.state.chessBoardMatrix;
     this.setPiecesMove([x, y]);
-    this.reverse(this.endClick.location, this.endClick.character[0], "1px solid #999");
+    var updatedMatrix = this.state.chessBoardMatrix;
+    this.setBorderColor(this.moveMatrix, "1px solid #999");
     updatedMatrix[x][y].character = this.endClick.character[1];
     updatedMatrix[this.endClick.location[0]][this.endClick.location[1]].character = null;
-
-    //this.setState({chessBoardMatrix:updatedMatrix});
+    this.setState({chessBoardMatrix: updatedMatrix});
   }
 
   controlPawn(imgName,coordinateX) {
@@ -217,12 +208,13 @@ class Game extends React.Component {
     return false;
   }
 
-  moveableLocation(x,y) {
-    for(var i = 0; i < this.moveMatrix.length; i++) {
-      if(this.moveMatrix[i][0] == x && this.moveMatrix[i][1] == y)
-        return true;
-    }
-    return false;
+  moveableLocation(location) {
+    var result =false;
+    this.moveMatrix.forEach( (value) => {
+      if(value[0] == location[0] && value[1] == location[1])
+        result = true;
+    })
+    return result;
   }
 
   isCharacterPawn() {
@@ -257,29 +249,36 @@ class Game extends React.Component {
   setEndClickCharacterAndLocation(k, coordinate) {
     this.endClick.character = [this.schema["nameChessPieces"][k], this.activeCharacter];
     this.endClick.location = coordinate;
+    this.endClick.move = this.moveMatrix;
   }
 
-  callReverseMethod(location, k) {//düzelte yapılması gerek
+  callReverseMethod(location, k) {
+    this.reverse(location, this.schema["nameChessPieces"][k]);
     if(this.endClick.location[0] != location[0] || this.endClick.location[1] != location[1] || this.back){
-      if(this.endClick.location[0] != null) {
-        this.setSchemaPawnMoveDirection(this.endClick.location[0], this.endClick.character[1]);
-        this.reverse(this.endClick.location, this.endClick.character[0], "1px solid #999");
-        this.setSchemaPawnMoveDirection(location[0], this.activeCharacter);
-      }
-      this.reverse(location, this.schema["nameChessPieces"][k], "3px solid yellow");
+      this.setBorderColor(this.endClick.move, "1px solid #999")
+      this.setBorderColor(this.moveMatrix, "3px solid yellow");
       this.back = false;
     }
     else {
       this.back = true;
-      this.reverse(this.endClick.location, this.endClick.character[0], "1px solid #999");
+      this.setBorderColor(this.moveMatrix, "1px solid #999");
     }
+  }
+
+  setBorderColor(moveMatrix, border) {
+    var updatedMatrix = this.state.chessBoardMatrix;
+    for ( var i = 0; i < moveMatrix.length; i++) {
+       updatedMatrix[moveMatrix[i][0]][moveMatrix[i][1]].border=border;
+    }
+    this.setState({chessBoardMatrix: updatedMatrix});
   }
 
   handleClick(x, y) {
     var k;
     this.activeLocation = [x, y];
-    if(this.moveableLocation(x, y)) {
+    if(this.moveableLocation([x, y])) {
       this.move(x, y);
+      this.moveMatrix = [];
     }
     else {
       this.activeCharacter = this.state.chessBoardMatrix[x][y].character;

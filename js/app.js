@@ -1,1 +1,1 @@
-import FirstComponent from './FirstComponent'
+import Game from './Game'
