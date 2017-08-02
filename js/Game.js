@@ -274,6 +274,7 @@ class Game extends React.Component {
   }
 
   handleClick(x, y) {
+    console.log("hjk")
     var k;
     this.activeLocation = [x, y];
     if(this.moveableLocation([x, y])) {
