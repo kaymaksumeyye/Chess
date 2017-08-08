@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import ReactScrollbar from 'react-scrollbar-js'
 import ChessBoard from './ChessBoard'
-require('./game.css');
+import io from 'socket.io-client'
+require('../css/game.css');
 
 class Game extends React.Component {
   constructor() {
@@ -31,6 +32,13 @@ class Game extends React.Component {
               }
     };
     this.arrayRender();
+  }
+
+  componentDidMount () {
+    this.socket = io('/');
+    this.socket.on('message', message => {
+      this.setState({ chessBoardMatrix: message })
+    })
   }
 
   setEx(i) {
@@ -139,7 +147,7 @@ class Game extends React.Component {
   pawnToTakePiece(direction, resultForOtherCharacters){
     var result = false;
     var possibleDirections = [[-1, 1], [-1, -1], [1, -1], [1, 1]];
-    if(this.isCharacterPawn())
+    if(this.isCharacterPawn(this.activeCharacter))
       possibleDirections.forEach(function(value) {
         if(value[0] == direction[0] && value[1] == direction[1])
           result = true;
@@ -181,6 +189,20 @@ class Game extends React.Component {
     } while(endCharacter[1] == "+" && ex < this.state.chessBoardMatrix.length);
   }
 
+  //karakter hareket ettikten sonra karakterin döndürülmesi veya karakter piyon ise ve karşı takımın son karesine ulaştı ise piyon artık vezir olmalıdır.
+  promotePaw(coordinate) {
+    var character = this.endClick.character[1];
+    if(this.isCharacterPawn(this.endClick.character[1])) {
+      if(coordinate[0] == 0 || coordinate[0] == 7) {
+        if(this.pieceColor(this.endClick.character[1]) == "imgBlack")
+          character = 9819;
+        else
+            character = 9813;
+      }
+    }
+    return character;
+  }
+
   setPiecesMove(coordinate) {
     var move = this.state.piecesMove;
     move.push([coordinate, this.endClick.location]);
@@ -191,7 +213,7 @@ class Game extends React.Component {
     this.setPiecesMove([x, y]);
     var updatedMatrix = this.state.chessBoardMatrix;
     this.setBorderColor(this.moveMatrix, "1px solid #999");
-    updatedMatrix[x][y].character = this.endClick.character[1];
+    updatedMatrix[x][y].character = this.promotePaw([x,y]);
     updatedMatrix[this.endClick.location[0]][this.endClick.location[1]].character = null;
     this.setState({chessBoardMatrix: updatedMatrix});
   }
@@ -217,8 +239,8 @@ class Game extends React.Component {
     return result;
   }
 
-  isCharacterPawn() {
-    if(this.activeCharacter == 9817 || this.activeCharacter == 9823)
+  isCharacterPawn(character) {
+    if(character == 9817 || character == 9823)
       return true;
     else
       return false;
@@ -237,6 +259,7 @@ class Game extends React.Component {
     else
       return [[1,0], [2,0], [1,-1], [1,1]];
   }
+
   //pyonun hareket yönleri schemaya set edilmesi
   setSchemaPawnMoveDirection(x, character) {
     var imgName = this.pieceColor(character);
@@ -274,7 +297,6 @@ class Game extends React.Component {
   }
 
   handleClick(x, y) {
-    console.log("hjk")
     var k;
     this.activeLocation = [x, y];
     if(this.moveableLocation([x, y])) {
@@ -285,12 +307,13 @@ class Game extends React.Component {
       this.activeCharacter = this.state.chessBoardMatrix[x][y].character;
       if(this.activeCharacter != null) {
         k = this.findCharacter();
-        if(this.isCharacterPawn())
+        if(this.isCharacterPawn(this.activeCharacter))
           this.setSchemaPawnMoveDirection(x, this.activeCharacter);
         this.callReverseMethod([x, y], k);
         this.setEndClickCharacterAndLocation(k, [x, y]);
       }
     }
+    this.socket.emit('message', this.state.chessBoardMatrix);
   }
 
   drawPiecesMove() {
@@ -327,3 +350,5 @@ ReactDOM.render(
   <Game />,
   document.getElementById('root')
 );
+
+export default Game;

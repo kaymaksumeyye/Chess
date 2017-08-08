@@ -42,7 +42,7 @@ class ChessBoard extends React.Component {
     });
   }
 
-  render(){
+  render() {
     return <div className = "chess-board">
             {this.drawChessBoard()}
            </div>
